@@ -5,8 +5,9 @@ Scallable and CDN-friendly HTTP API for TON blockchain.
 ## API Endpoints
 
 There are two public endpoints for this API:
-* `mainnet` - https://mainnet-v4.tonhubapi.com
-* `sandbox` - https://sandbox-v4.tonhubapi.com
+
+- `mainnet` - https://mainnet-v4.tonhubapi.com
+- `sandbox` - https://sandbox-v4.tonhubapi.com
 
 ## Selfhosting
 
@@ -18,6 +19,31 @@ docker run -e TON_CONFIG=https://your-config-url -p 3000:3000 tonwhales/ton-api-
 
 ## Methods
 
+**Block methods:**
+
+- `GET /block/latest` - Get latest block info
+- `GET /block/<seqno>` - Get full block by seqno
+- `GET /block/utime/<unix_time>` - Get block by unix time
+- `GET /block/<seqno>/config` - Get blockchain config (all or filtered by ids)
+- `WS /block/watch` - WebSocket stream of new blocks
+- `WS /block/watch/changed` - WebSocket stream of new blocks with account changes
+
+**Account methods:**
+
+- `GET /block/<seqno>/<address>` - Get account state at block
+- `GET /block/<seqno>/<address>/lite` - Get account state lite (codeHash/dataHash only)
+- `GET /block/<seqno>/<address>/changed/<lt>` - Check if account changed since lt
+- `GET /block/<seqno>/<address>/run/<method>/<args?>` - Run get method (GET)
+- `POST /block/<seqno>/<address>/run/<method>` - Run get method (POST)
+- `GET /account/<address>/tx/<lt>/<hash>` - Get account transactions (raw BOC)
+- `GET /account/<address>/tx/parsed/<lt>/<hash>` - Get parsed account transactions
+
+**Transaction methods:**
+
+- `POST /send` - Send message to network
+
+---
+
 ### Get latest block
 
 ```
@@ -25,21 +51,22 @@ GET /block/latest
 ```
 
 [Example](https://mainnet-v4.tonhubapi.com/block/latest)
+
 ```json
 {
-    "last": {
-        "seqno": 20260051,
-        "shard": "-9223372036854775808",
-        "workchain": -1,
-        "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY=",
-        "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE="
-    },
-    "init": {
-        "fileHash": "XplPz01CXAps5qeSWUtxcyBfdAo5zVb1N979KLSKD24=",
-        "rootHash": "F6OpKZKqvqeFp6CQmFomXNMfMj2EnaUSOXN+Mh+wVWk="
-    },
-    "stateRootHash": "l0OsDfM1r/IkNNWYqVq6t6zyZVq/EDmp0QnYYm4QS74=",
-    "now": 1651510746
+  "last": {
+    "seqno": 20260051,
+    "shard": "-9223372036854775808",
+    "workchain": -1,
+    "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY=",
+    "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE="
+  },
+  "init": {
+    "fileHash": "XplPz01CXAps5qeSWUtxcyBfdAo5zVb1N979KLSKD24=",
+    "rootHash": "F6OpKZKqvqeFp6CQmFomXNMfMj2EnaUSOXN+Mh+wVWk="
+  },
+  "stateRootHash": "l0OsDfM1r/IkNNWYqVq6t6zyZVq/EDmp0QnYYm4QS74=",
+  "now": 1651510746
 }
 ```
 
@@ -50,133 +77,137 @@ GET /block/<seqno>
 ```
 
 [Example](https://mainnet-v4.tonhubapi.com/block/20260051)
+
 ```json
 {
-    "exist": true,
-    "block": {
-        "shards": [
-            {
-                "workchain": -1,
-                "seqno": 20260051,
-                "shard": "-9223372036854775808",
-                "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE=",
-                "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY=",
-                "transactions": [
-                    {
-                        "account": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
-                        "hash": "RPBPe+SrbhRyRgRj204HwdxQqVjF9xfSaAuQl6SEK6o=",
-                        "lt": "27587556000001"
-                    },
-                    {
-                        "account": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
-                        "hash": "vG2nmHhygPkxoeUshbVsVgE9qlT5engZOaY1RAycJCk=",
-                        "lt": "27587556000002"
-                    },
-                    {
-                        "account": "Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW",
-                        "hash": "K6p5MNc4ZsjuWaPhPqPjREKVM94nfaRyHbSD6fJjEIs=",
-                        "lt": "27587556000001"
-                    },
-                    {
-                        "account": "Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW",
-                        "hash": "jmubebyKwuPkt75X14lDGo0SHU5iMwElkjSfNxXn6LA=",
-                        "lt": "27587556000003"
-                    },
-                    {
-                        "account": "Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn",
-                        "hash": "oRMfmLqtFW2lWeeIZYaDLg8upQDC2baKvukyrJZmGd8=",
-                        "lt": "27587556000003"
-                    }
-                ]
-            },
-            {
-                "workchain": 0,
-                "seqno": 25423451,
-                "shard": "-9223372036854775808",
-                "rootHash": "HYyaG45W0zRzirGyU761gPVyvymHG4GrN5mK28WUjD8=",
-                "fileHash": "qNHn9kSd0Ey7sVcWKfewDiMnaVDZUuMBu6gm922vpPI=",
-                "transactions": []
-            }
+  "exist": true,
+  "block": {
+    "shards": [
+      {
+        "workchain": -1,
+        "seqno": 20260051,
+        "shard": "-9223372036854775808",
+        "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE=",
+        "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY=",
+        "transactions": [
+          {
+            "account": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
+            "hash": "RPBPe+SrbhRyRgRj204HwdxQqVjF9xfSaAuQl6SEK6o=",
+            "lt": "27587556000001"
+          },
+          {
+            "account": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
+            "hash": "vG2nmHhygPkxoeUshbVsVgE9qlT5engZOaY1RAycJCk=",
+            "lt": "27587556000002"
+          },
+          {
+            "account": "Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW",
+            "hash": "K6p5MNc4ZsjuWaPhPqPjREKVM94nfaRyHbSD6fJjEIs=",
+            "lt": "27587556000001"
+          },
+          {
+            "account": "Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW",
+            "hash": "jmubebyKwuPkt75X14lDGo0SHU5iMwElkjSfNxXn6LA=",
+            "lt": "27587556000003"
+          },
+          {
+            "account": "Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn",
+            "hash": "oRMfmLqtFW2lWeeIZYaDLg8upQDC2baKvukyrJZmGd8=",
+            "lt": "27587556000003"
+          }
         ]
-    }
+      },
+      {
+        "workchain": 0,
+        "seqno": 25423451,
+        "shard": "-9223372036854775808",
+        "rootHash": "HYyaG45W0zRzirGyU761gPVyvymHG4GrN5mK28WUjD8=",
+        "fileHash": "qNHn9kSd0Ey7sVcWKfewDiMnaVDZUuMBu6gm922vpPI=",
+        "transactions": []
+      }
+    ]
+  }
 }
 ```
 
 ### Get block by unix time
+
 ```
 GET /block/utime/<unix time>
 ```
+
 [Example](https://mainnet-v4.tonhubapi.com/block/utime/1658336750)
+
 ```json
 {
-    "exist": true,
-    "block": {
-        "shards": [
-            {
-                "workchain": -1,
-                "seqno": 22208312,
-                "shard": "-9223372036854775808",
-                "rootHash": "yrIMmfStaS0sy40/FF7jrOMMhNDfl/LNQXFyikLN7Nc=",
-                "fileHash": "G3xxsoHwwBhac1OOtB4N9XIyAe1HZhEcr2DUczD5zgo=",
-                "transactions": [
-                    {
-                        "account": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
-                        "hash": "Wi9oo1nEyfdi+aGKtM5Mp9i9NmmB+dk3Duad2QONCTs=",
-                        "lt": "29722294000001"
-                    },
-                    {
-                        "account": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
-                        "hash": "FdJL1IXpJ1xh8sgOsCiX2QGSQM7nVMjF8haqnnfpPDs=",
-                        "lt": "29722294000002"
-                    },
-                    {
-                        "account": "Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW",
-                        "hash": "4kLj1vN30ENzfhs0fmgIdgV5Q978Bm4seFcrdJ6xVxU=",
-                        "lt": "29722294000001"
-                    },
-                    {
-                        "account": "Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW",
-                        "hash": "jwHRVGgnOCTbbyo5uT0S26xrlTYq5lebdb1IVEoR+GQ=",
-                        "lt": "29722294000003"
-                    },
-                    {
-                        "account": "Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn",
-                        "hash": "1/AVsZDncnAbAug+J/L+0fzNIXccFBg1i0EbtciJJw4=",
-                        "lt": "29722294000003"
-                    }
-                ]
-            },
-            {
-                "workchain": 0,
-                "seqno": 27501824,
-                "shard": "-9223372036854775808",
-                "rootHash": "R8HwI7HJMUSrHIoXmnIScYZqkrFeN7w1SIYAtdtCly8=",
-                "fileHash": "IE/RTI/0o0ctUHnOmBpEUNyjP/q/cHX86rMFIjaIUmU=",
-                "transactions": [
-                    {
-                        "account": "EQB5JdVF7RQMlE5amEK2kQ0DF8J7Ykpm_clPgnU19IjBY81O",
-                        "hash": "736NHkWwCJ/lM/u4bE+FkapLAEy8fuDKFkOao/78oO8=",
-                        "lt": "29722293000001"
-                    },
-                    {
-                        "account": "EQB5JdVF7RQMlE5amEK2kQ0DF8J7Ykpm_clPgnU19IjBY81O",
-                        "hash": "KNdrekbyAeTIhVdtTSrRBoRX6tHYRahvlMkSQ6hKCwc=",
-                        "lt": "29722293000007"
-                    },
-                    {
-                        "account": "EQCXxtncmR-OSh1CNtqYDOjm4toQyMcRIWkEQDY_FRLimGZ4",
-                        "hash": "PrEPfMXjjIJ5J6Uuc8TF0g70qOn3Tp53W6Y314ztU08=",
-                        "lt": "29722293000005"
-                    },
-                    {
-                        "account": "EQDWHdEQ7hES-Gc0QxBAWTIZDgvCfoMprovccc4tV7f33keE",
-                        "hash": "il4woJYyVpGGjL8unx6rg/83RSHg099mqANEKXrulbs=",
-                        "lt": "29722293000003"
-                    }
-                ]
-            }
+  "exist": true,
+  "block": {
+    "shards": [
+      {
+        "workchain": -1,
+        "seqno": 22208312,
+        "shard": "-9223372036854775808",
+        "rootHash": "yrIMmfStaS0sy40/FF7jrOMMhNDfl/LNQXFyikLN7Nc=",
+        "fileHash": "G3xxsoHwwBhac1OOtB4N9XIyAe1HZhEcr2DUczD5zgo=",
+        "transactions": [
+          {
+            "account": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
+            "hash": "Wi9oo1nEyfdi+aGKtM5Mp9i9NmmB+dk3Duad2QONCTs=",
+            "lt": "29722294000001"
+          },
+          {
+            "account": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
+            "hash": "FdJL1IXpJ1xh8sgOsCiX2QGSQM7nVMjF8haqnnfpPDs=",
+            "lt": "29722294000002"
+          },
+          {
+            "account": "Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW",
+            "hash": "4kLj1vN30ENzfhs0fmgIdgV5Q978Bm4seFcrdJ6xVxU=",
+            "lt": "29722294000001"
+          },
+          {
+            "account": "Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW",
+            "hash": "jwHRVGgnOCTbbyo5uT0S26xrlTYq5lebdb1IVEoR+GQ=",
+            "lt": "29722294000003"
+          },
+          {
+            "account": "Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn",
+            "hash": "1/AVsZDncnAbAug+J/L+0fzNIXccFBg1i0EbtciJJw4=",
+            "lt": "29722294000003"
+          }
         ]
-    }
+      },
+      {
+        "workchain": 0,
+        "seqno": 27501824,
+        "shard": "-9223372036854775808",
+        "rootHash": "R8HwI7HJMUSrHIoXmnIScYZqkrFeN7w1SIYAtdtCly8=",
+        "fileHash": "IE/RTI/0o0ctUHnOmBpEUNyjP/q/cHX86rMFIjaIUmU=",
+        "transactions": [
+          {
+            "account": "EQB5JdVF7RQMlE5amEK2kQ0DF8J7Ykpm_clPgnU19IjBY81O",
+            "hash": "736NHkWwCJ/lM/u4bE+FkapLAEy8fuDKFkOao/78oO8=",
+            "lt": "29722293000001"
+          },
+          {
+            "account": "EQB5JdVF7RQMlE5amEK2kQ0DF8J7Ykpm_clPgnU19IjBY81O",
+            "hash": "KNdrekbyAeTIhVdtTSrRBoRX6tHYRahvlMkSQ6hKCwc=",
+            "lt": "29722293000007"
+          },
+          {
+            "account": "EQCXxtncmR-OSh1CNtqYDOjm4toQyMcRIWkEQDY_FRLimGZ4",
+            "hash": "PrEPfMXjjIJ5J6Uuc8TF0g70qOn3Tp53W6Y314ztU08=",
+            "lt": "29722293000005"
+          },
+          {
+            "account": "EQDWHdEQ7hES-Gc0QxBAWTIZDgvCfoMprovccc4tV7f33keE",
+            "hash": "il4woJYyVpGGjL8unx6rg/83RSHg099mqANEKXrulbs=",
+            "lt": "29722293000003"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -185,78 +216,82 @@ GET /block/utime/<unix time>
 ```
 GET /block/<seqno>/<address>
 ```
+
 [Example Active](https://mainnet-v4.tonhubapi.com/block/20260051/EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N)
+
 ```json
 {
-    "account": {
-        "state": {
-            "type": "active",
-            "code": "te6ccsEBAQEAcQAAAN7/ACDdIIIBTJe6IYIBM5y6sZ9xsO1E0NMf0x8x1wv/4wTgpPJggwjXGCDTH9Mf0x/4IxO78mPtRNDTH9Mf0//RUTK68qFRRLryogT5AVQQVfkQ8qP4AJMg10qW0wfUAvsA6NEBpMjLH8sfy//J7VTpzt1c",
-            "data": "te6ccsEBAQEAKgAAAFAAAAA3KamjF3LJ7WtipuLroUqTuQRi56Nnd3vrijj7FbnzOETSLOL/41iLCA=="
-        },
-        "balance": {
-            "coins": "68059884193787038"
-        },
-        "last": {
-            "lt": "27585609000006",
-            "hash": "TDhTOsz5TH9TNp5CdHjYtmzb/gA9gMrQA8jNRfutcKQ="
-        }
+  "account": {
+    "state": {
+      "type": "active",
+      "code": "te6ccsEBAQEAcQAAAN7/ACDdIIIBTJe6IYIBM5y6sZ9xsO1E0NMf0x8x1wv/4wTgpPJggwjXGCDTH9Mf0x/4IxO78mPtRNDTH9Mf0//RUTK68qFRRLryogT5AVQQVfkQ8qP4AJMg10qW0wfUAvsA6NEBpMjLH8sfy//J7VTpzt1c",
+      "data": "te6ccsEBAQEAKgAAAFAAAAA3KamjF3LJ7WtipuLroUqTuQRi56Nnd3vrijj7FbnzOETSLOL/41iLCA=="
     },
-    "block": {
-        "workchain": -1,
-        "seqno": 20260051,
-        "shard": "-9223372036854775808",
-        "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY=",
-        "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE="
+    "balance": {
+      "coins": "68059884193787038"
+    },
+    "last": {
+      "lt": "27585609000006",
+      "hash": "TDhTOsz5TH9TNp5CdHjYtmzb/gA9gMrQA8jNRfutcKQ="
     }
+  },
+  "block": {
+    "workchain": -1,
+    "seqno": 20260051,
+    "shard": "-9223372036854775808",
+    "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY=",
+    "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE="
+  }
 }
 ```
 
 [Example Uninitialized](https://mainnet-v4.tonhubapi.com/block/100/EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N)
+
 ```json
 {
-    "account": {
-        "state": {
-            "type": "uninit"
-        },
-        "balance": {
-            "coins": "0"
-        },
-        "last": null
+  "account": {
+    "state": {
+      "type": "uninit"
     },
-    "block": {
-        "workchain": -1,
-        "seqno": 100,
-        "shard": "-9223372036854775808",
-        "fileHash": "UrMFCxxozFopj02DXaCvACnUQixvMGXELsir2vcg8AI=",
-        "rootHash": "bWveWwcLINRBhpmtkD6+KUQRS5IziVCvmVAjzHAta6Q="
-    }
+    "balance": {
+      "coins": "0"
+    },
+    "last": null
+  },
+  "block": {
+    "workchain": -1,
+    "seqno": 100,
+    "shard": "-9223372036854775808",
+    "fileHash": "UrMFCxxozFopj02DXaCvACnUQixvMGXELsir2vcg8AI=",
+    "rootHash": "bWveWwcLINRBhpmtkD6+KUQRS5IziVCvmVAjzHAta6Q="
+  }
 }
 ```
 
 [Example Frozen](https://mainnet-v4.tonhubapi.com/block/20260051/kf8guqdIbY6kpMykR8WFeVGbZcP2iuBagXfnQuq0rGrxgE04)
+
 ```json
 {
-    "account": {
-        "state": {
-            "type": "frozen",
-            "stateHash": "wLZlv78I4AMOzvpwfAndGgnP4zjzgEgGztOHSxaktqI="
-        },
-        "balance": {
-            "coins": "0"
-        },
-        "last": {
-            "lt": "17307821000003",
-            "hash": "iJctiNh0Mlerm3BINwbiHwXDLsGa3vQBbOwU7Yeh7JU="
-        }
+  "account": {
+    "state": {
+      "type": "frozen",
+      "stateHash": "wLZlv78I4AMOzvpwfAndGgnP4zjzgEgGztOHSxaktqI="
     },
-    "block": {
-        "workchain": -1,
-        "seqno": 20260051,
-        "shard": "-9223372036854775808",
-        "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY=",
-        "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE="
+    "balance": {
+      "coins": "0"
+    },
+    "last": {
+      "lt": "17307821000003",
+      "hash": "iJctiNh0Mlerm3BINwbiHwXDLsGa3vQBbOwU7Yeh7JU="
     }
+  },
+  "block": {
+    "workchain": -1,
+    "seqno": 20260051,
+    "shard": "-9223372036854775808",
+    "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY=",
+    "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE="
+  }
 }
 ```
 
@@ -267,8 +302,18 @@ GET /block/<seqno>/<address>/changed/<since_lt>
 ```
 
 [Example](https://mainnet-v4.tonhubapi.com/block/20435953/EQCkR1cGmnsE45N4K0otPl5EnxnRakmGqeJUNua5fkWhales/changed/27343787000003)
+
 ```json
-{"changed":true,"block":{"workchain":-1,"seqno":20435953,"shard":"-9223372036854775808","fileHash":"HFflk6uOnOpFc40freTDTPytu9z1zMsRTN6OjruZE/0=","rootHash":"jhnNLXgngcxKNLVsYcdfDZbmEcYAAW9FG1MQdbzv8kU="}}
+{
+  "changed": true,
+  "block": {
+    "workchain": -1,
+    "seqno": 20435953,
+    "shard": "-9223372036854775808",
+    "fileHash": "HFflk6uOnOpFc40freTDTPytu9z1zMsRTN6OjruZE/0=",
+    "rootHash": "jhnNLXgngcxKNLVsYcdfDZbmEcYAAW9FG1MQdbzv8kU="
+  }
+}
 ```
 
 ### Run get method of account at block
@@ -277,33 +322,37 @@ NOTE: To pass arguments you need to serialize them into url-safe base64 serializ
 
 ```
 GET /block/<seqno>/<address>/run/<method>/<args?>
+POST /block/<seqno>/<address>/run/<method>
 ```
+
+For GET method, args are passed as URL parameter. For POST method, args are passed in request body as base64 string.
 [Example](https://mainnet-v4.tonhubapi.com/block/20260051/EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N/run/seqno)
+
 ```json
 {
-    "arguments": [],
-    "result": [
-        {
-            "type": "int",
-            "value": "55"
-        }
-    ],
-    "exitCode": 0,
-    "resultRaw": "te6ccgEBAgEAEQABGAAAAQEAAAAAAAAANwEAAA==",
-    "block": {
-        "workchain": -1,
-        "seqno": 20260051,
-        "shard": "-9223372036854775808",
-        "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE=",
-        "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY="
-    },
-    "shardBlock": {
-        "workchain": 0,
-        "seqno": 25423451,
-        "shard": "-9223372036854775808",
-        "rootHash": "HYyaG45W0zRzirGyU761gPVyvymHG4GrN5mK28WUjD8=",
-        "fileHash": "qNHn9kSd0Ey7sVcWKfewDiMnaVDZUuMBu6gm922vpPI="
+  "arguments": [],
+  "result": [
+    {
+      "type": "int",
+      "value": "55"
     }
+  ],
+  "exitCode": 0,
+  "resultRaw": "te6ccgEBAgEAEQABGAAAAQEAAAAAAAAANwEAAA==",
+  "block": {
+    "workchain": -1,
+    "seqno": 20260051,
+    "shard": "-9223372036854775808",
+    "rootHash": "qZxhIvvQf6CWk7+UkrDWmtRJUIjPP2U4eNtZIkKGYlE=",
+    "fileHash": "CMw5kuwsPMfJQZ6fvW9zy8xczZRxWMK8r+9KdmCB1dY="
+  },
+  "shardBlock": {
+    "workchain": 0,
+    "seqno": 25423451,
+    "shard": "-9223372036854775808",
+    "rootHash": "HYyaG45W0zRzirGyU761gPVyvymHG4GrN5mK28WUjD8=",
+    "fileHash": "qNHn9kSd0Ey7sVcWKfewDiMnaVDZUuMBu6gm922vpPI="
+  }
 }
 ```
 
@@ -314,6 +363,7 @@ Open a WebSocket connection to `/block/watch`. And you will get notifications ab
 NOTE: This API doesn't guarantee that seqno always sequental. There are could be holes in sequences and apps have to adjust for them.
 
 Example:
+
 ```json
 {"seqno":20259363,"time":1651508402,"now":1651508406}
 {"seqno":20260395,"time":1651511942,"now":1651511946}
@@ -329,6 +379,7 @@ Example:
 Open a WebSocket connection to `/block/watch/changed` to get stream of new blocks. This endpoint behaves same way as a previous one.
 
 Example:
+
 ```json
 {"seqno":20260487,"changed":{"Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF":{"lt":"27588035000002","hash":"uK0OWZgfDlyJx1GjqmO2FHeAoQtsrgC9IF96FA++TNE="},"Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW":{"lt":"27588035000003","hash":"fGq3ttfz2ljePh61XLpzcUlgWFs+gkGxfKPjPJvGArE="},"Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn":{"lt":"27588035000003","hash":"pdzPDjQC9ADvXYBTxZvX65waohLgGIfiqGZBR2WUE4o="},"EQC3wzIebuX88AITT4AGQVakfrbx4dUb5Skoa0oc6Rnmwpoz":{"lt":"27588034000001","hash":"ph0Yh6JoYU5Cj+Gm7X5Rks4c6McqbbgGSu96xnnrrPw="},"EQDrLq-X6jKZNHAScgghh0h1iog3StK71zn8dcmrOj8jPWRA":{"lt":"27588034000003","hash":"Uzpg0OapY/r8h4AMHTkS2WqDLL4z7AA5t4buLfV2a38="}}}
 {"seqno":20260488,"changed":{"Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF":{"lt":"27588036000002","hash":"INW1qjiGpFsZiLWRo41npGKFWXPleeNpeTQskIsjnJc="},"Ef80UXx731GHxVr0-LYf3DIViMerdo3uJLAG3ykQZFjXz2kW":{"lt":"27588036000003","hash":"F6wc0Llhq4KKvqfD3PHIM/5n3ykTGm/OKdcGKC2+4Kg="},"Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn":{"lt":"27588036000003","hash":"BWSJtc6dUuPJCy5S9F8XGRAxDSnWrJwKGar0YhvcDY8="}}}
@@ -351,27 +402,80 @@ Example:
 ### Get config at block
 
 ```
+GET /block/<seqno>/config
 GET /block/<seqno>/config/:ids
 ```
 
-NOTE: you need to manually parse cell into dict with 32 bit integer keys.
+Get blockchain config at specific block. Use `:ids` parameter to filter specific config parameters (comma-separated). NOTE: you need to manually parse cell into dict with 32 bit integer keys.
 
 [Example](https://mainnet-v4.tonhubapi.com/block/20260051/config/1,3,4)
+
 ```json
-{"exist":true,"config":{"cell":"te6cckEBBQEAUgACA87AAwEBAdQCAEDqw5GhWtBlRHAkrnTVXrXmH4t/zkj2ju9ZgbB+zEwJSgEBZgQAQDMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzPLrCaQ==","address":"Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn","globalBalance":{"coins":"5059853249096870767"}}}
+{
+  "exist": true,
+  "config": {
+    "cell": "te6cckEBBQEAUgACA87AAwEBAdQCAEDqw5GhWtBlRHAkrnTVXrXmH4t/zkj2ju9ZgbB+zEwJSgEBZgQAQDMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzPLrCaQ==",
+    "address": "Ef9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVbxn",
+    "globalBalance": { "coins": "5059853249096870767" }
+  }
+}
 ```
 
+### Get account state lite (without code/data cells)
+
+```
+GET /block/<seqno>/<address>/lite
+```
+
+Returns account state with codeHash and dataHash instead of full code/data cells. Useful when you only need to check if account code/data changed.
+
 ### Get account transactions
+
 ```
 GET /account/<address>/tx/:lt/:hash
 ```
 
-NOTE: This method always returns at most 20 results.
+Returns raw transaction BOC. NOTE: This method always returns at most 20 results.
+
 [Example](https://mainnet-v4.tonhubapi.com/account/EQCo6VT63H1vKJTiUo6W4M8RrTURCyk5MdbosuL5auEqpz-C/tx/27668319000001/x2_3cqpuYzOC0CZU9bNMfGG84FT_huceZpcrcr2Bvgc)
 
 ```json
-{"blocks":[{"workchain":0,"shard":"-9223372036854775808","seqno":25502350,"fileHash":"Z3nAkOC16+HVk8fFCeQEBMgdud7cWgBpAiELMf7yE6E=","rootHash":"LHxxzka0ijhFDBtCzcY++RXhfk5ss7QXUSh3YXA2E84="}],"boc": "te6ccgICAQgAEAAALCgADwAOAA0ADAALAAoACQAIAAcABgAFAAQAAwACAAE.....inN/zJIAeKAjN2zBN0h86GSts5pd6jN9mIEnrkQFAWjA=="}
+{
+  "blocks": [
+    {
+      "workchain": 0,
+      "shard": "-9223372036854775808",
+      "seqno": 25502350,
+      "fileHash": "Z3nAkOC16+HVk8fFCeQEBMgdud7cWgBpAiELMf7yE6E=",
+      "rootHash": "LHxxzka0ijhFDBtCzcY++RXhfk5ss7QXUSh3YXA2E84="
+    }
+  ],
+  "boc": "te6ccgICAQgAEAAALCgADwAOAA0ADAALAAoACQAIAAcABgAFAAQAAwACAAE.....inN/zJIAeKAjN2zBN0h86GSts5pd6jN9mIEnrkQFAWjA=="
+}
+```
+
+### Get parsed account transactions
+
+```
+GET /account/<address>/tx/parsed/:lt/:hash
+```
+
+Returns parsed transactions with decoded messages. Supports optional `?count=<number>` query parameter (default: 20, max: 20).
+
+### Send message
+
+```
+POST /send
+```
+
+Sends a message to the TON network. Body should contain `boc` field with base64-encoded message BOC.
+
+```json
+{
+  "boc": "base64-encoded-message-boc"
+}
 ```
 
 ## License
+
 MIT
